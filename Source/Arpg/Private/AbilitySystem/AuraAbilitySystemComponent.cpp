@@ -173,9 +173,58 @@ void UAuraAbilitySystemComponent::UpdateAbilityStatus(int32 Level)
 			
 			GiveAbility(AbilitySpec);
 			MarkAbilitySpecDirty(AbilitySpec);
-			ClientUpdateAbilityStatus(AbilityInformation.AbilityTag,FAuraGameplayTags::Get().Abilities_Status_Eligible);
+			ClientUpdateAbilityStatus(AbilityInformation.AbilityTag,FAuraGameplayTags::Get().Abilities_Status_Eligible,1);
 		}
 	}
+}
+
+
+//花费技能点 升级技能事件
+void UAuraAbilitySystemComponent::ServerSpendSpellPoint_Implementation(const FGameplayTag& AbilityTag)
+{
+	if (FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (GetAvatarActor()->Implements<UPlayerInterface>())
+		{
+			IPlayerInterface::Execute_AddToSpellPoints(GetAvatarActor(),-1);
+		}
+		const FAuraGameplayTags GameplayTags = FAuraGameplayTags::Get();
+		FGameplayTag Status = GetStatusFromSpec(*AbilitySpec);
+		if (Status.MatchesTagExact(GameplayTags.Abilities_Status_Eligible))
+		{
+			AbilitySpec->GetDynamicSpecSourceTags().RemoveTag(GameplayTags.Abilities_Status_Eligible);
+			AbilitySpec->GetDynamicSpecSourceTags().AddTag(GameplayTags.Abilities_Status_Unlocked);
+			Status = GameplayTags.Abilities_Status_Unlocked;
+		}else if (Status.MatchesTag(GameplayTags.Abilities_Status_Equipped) || Status.MatchesTag(GameplayTags.Abilities_Status_Unlocked))
+		{
+			AbilitySpec->Level +=1;
+		}
+
+		ClientUpdateAbilityStatus(AbilityTag,Status,AbilitySpec->Level);
+		MarkAbilitySpecDirty(*AbilitySpec);
+	}
+}
+
+
+//根据gameplayTag获取ability的描述信息
+bool UAuraAbilitySystemComponent::GetDescriptionByAbilityTag(const FGameplayTag& AbilityTag, FString& OutDescription,
+	FString& OutNextLevelDescription)
+{
+	if (const FGameplayAbilitySpec* AbilitySpec = GetSpecFromAbilityTag(AbilityTag))
+	{
+		if (UAuraGameplayAbility* AuraGameplayAbility = Cast<UAuraGameplayAbility>(AbilitySpec->Ability))
+		{
+			OutDescription = AuraGameplayAbility->GetDescription(AbilitySpec->Level);
+			OutNextLevelDescription = AuraGameplayAbility->GetNextLevelDescription(AbilitySpec->Level+1);
+			return true;
+		}
+	}
+	
+	//如果没有找到则说明还没有激活
+	const UAbilityInfo* AbilityInfo = UAuraAbilitySystemLibrary::GetAbilityInfoClass(GetAvatarActor());
+	OutDescription = UAuraGameplayAbility::GetLockedDescription(AbilityInfo->FindAbilityInfoForTag(AbilityTag).LevelRequirement);
+	OutNextLevelDescription = FString();
+	return false;
 }
 
 void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
@@ -190,9 +239,9 @@ void UAuraAbilitySystemComponent::OnRep_ActivateAbilities()
 }
 
 void UAuraAbilitySystemComponent::ClientUpdateAbilityStatus_Implementation(const FGameplayTag& AbilityTag,
-	const FGameplayTag& StatusTag)
+	const FGameplayTag& StatusTag,int32 AbilityLevel)
 {
-	AbilityStatusChanged.Broadcast(AbilityTag, StatusTag);
+	AbilityStatusChanged.Broadcast(AbilityTag, StatusTag,AbilityLevel);
 }
 
 void UAuraAbilitySystemComponent::ClientEffectApplied_Implementation(UAbilitySystemComponent* AbilitySystemComponent,
