@@ -3,11 +3,9 @@
 
 #include "AbilitySystem/Abilities/AuraFireBolt.h"
 
-#include "Tags/AuraGameplayTags.h"
-
 FString UAuraFireBolt::GetDescription(int32 Level)
 {
-	const int32 Damage =GetDamageByDamageType(Level,FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());;
 	const float ManaCost = FMath::Abs(GetManaCost(Level));
 	const float CoolDown = GetCooldown(Level);
 	if (Level ==1)
@@ -29,7 +27,7 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 				"<Damage>%d</>"
 				"<Default>fire damage with a chance to burn</>"
 				"\n\n"),
-				Level,ManaCost,CoolDown,Damage);
+				Level,ManaCost,CoolDown,ScaledDamage);
 	}else
 	{
 		return FString::Printf(TEXT(
@@ -49,13 +47,13 @@ FString UAuraFireBolt::GetDescription(int32 Level)
 				"<Damage>%d</>"
 				"<Default>fire damage with a chance to burn</>"
 				"\n\n"),
-				Level,ManaCost,CoolDown,FMath::Min(Level,NumProjectiles),Damage);
+				Level,ManaCost,CoolDown,FMath::Min(Level,NumProjectiles),ScaledDamage);
 	}
 }
 
 FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 {
-	const int32 Damage =GetDamageByDamageType(Level,FAuraGameplayTags::Get().Damage_Fire);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());;
 	const float ManaCost = GetManaCost(Level);
 	const float CoolDown = GetCooldown(Level);
 	
@@ -76,4 +74,4 @@ FString UAuraFireBolt::GetNextLevelDescription(int32 Level)
 			"<Damage>%d</>"
 			"<Default>fire damage with a chance to burn</>"
 			"\n\n"),
-			Level,ManaCost,CoolDown,FMath::Min(Level,NumProjectiles),Damage);}
+			Level,ManaCost,CoolDown,FMath::Min(Level,NumProjectiles),ScaledDamage);}

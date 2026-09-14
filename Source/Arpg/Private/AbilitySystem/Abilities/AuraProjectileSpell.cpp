@@ -14,21 +14,21 @@
 
 FString UAuraProjectileSpell::GetDescription(int32 Level)
 {
-	const int32 Damage =DamageTypes[FAuraGameplayTags::Get().Damage_Fire].GetValueAtLevel(Level);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());;
 	if (Level ==1)
 	{
-		return FString::Printf(TEXT("<Title>FIRE BOLT</>\n\n<Default>Launched a bolt of fire,exploding on impact and dealing:</><Damage>%d</><Default>fire damage with a chance to burn</>\n\n<Small>Level:</><Level>%d</>"),Damage,Level);
+		return FString::Printf(TEXT("<Title>FIRE BOLT</>\n\n<Default>Launched a bolt of fire,exploding on impact and dealing:</><Damage>%d</><Default>fire damage with a chance to burn</>\n\n<Small>Level:</><Level>%d</>"),ScaledDamage,Level);
 	}else
 	{
-		return FString::Printf(TEXT("<Title>FIRE BOLT</>\n\n<Default>Launched %d bolt of fire,exploding on impact and dealing:</><Damage>%d</><Default>fire damage with a chance to burn</>\n\n<Small>Level:</><Level>%d</>"),FMath::Min(Level,NumProjectiles),Damage,Level);
+		return FString::Printf(TEXT("<Title>FIRE BOLT</>\n\n<Default>Launched %d bolt of fire,exploding on impact and dealing:</><Damage>%d</><Default>fire damage with a chance to burn</>\n\n<Small>Level:</><Level>%d</>"),FMath::Min(Level,NumProjectiles),ScaledDamage,Level);
 
 	}
 }
 
 FString UAuraProjectileSpell::GetNextLevelDescription(int32 Level)
 {
-	const int32 Damage =DamageTypes[FAuraGameplayTags::Get().Damage_Fire].GetValueAtLevel(Level);
-	return FString::Printf(TEXT("<Title>NEXT LEVEL</>\n\n<Default>Launched %d bolt of fire,exploding on impact and dealing:</><Damage>%d</><Default>fire damage with a chance to burn</>\n\n<Small>Level:</><Level>%d</>"),FMath::Min(Level,NumProjectiles),Damage,Level);
+	const int32 ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());;
+	return FString::Printf(TEXT("<Title>NEXT LEVEL</>\n\n<Default>Launched %d bolt of fire,exploding on impact and dealing:</><Damage>%d</><Default>fire damage with a chance to burn</>\n\n<Small>Level:</><Level>%d</>"),FMath::Min(Level,NumProjectiles),ScaledDamage,Level);
 
 }
 
@@ -83,15 +83,11 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 	HitResult.Location = ProjectileTargetLocation;
 	EffectContextHandle.AddHitResult(HitResult);
 
-	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(
-		DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
-	for (auto& Pair : DamageTypes)
-	{
-		const float ScaledDamage = Pair.Value.GetValueAtLevel(GetAbilityLevel());
-		UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, Pair.Key, ScaledDamage);
-	}
-
-
+	const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
+	
+	const float ScaledDamage = Damage.GetValueAtLevel(GetAbilityLevel());
+	UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageType, ScaledDamage);
+	
 	Projectile->DamageEffectSpecHandle = SpecHandle;
 	Projectile->FinishSpawning(SpawnTransform);
 }

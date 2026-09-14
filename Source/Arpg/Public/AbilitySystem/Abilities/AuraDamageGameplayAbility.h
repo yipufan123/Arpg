@@ -21,13 +21,22 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> DamageEffectClass;
+
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Damage")
+	FGameplayTag DamageType;
 	
 	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Damage")
-	TMap<FGameplayTag, FScalableFloat> DamageTypes;
+	FScalableFloat Damage;
 
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Damage")
+	float DebuffChance =20.f;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Damage")
+	float DebuffDamage = 5.f;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Damage")
+	float DebuffFrequency = 1.f;
+	UPROPERTY(EditDefaultsOnly,BlueprintReadOnly,Category = "Damage")
+	float DebuffDuration = 5.f;
+	
 	UFUNCTION(BlueprintPure)
 	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& TaggedMontages) const;
-
-
-	float GetDamageByDamageType(float InLevel,const FGameplayTag& DamageType);
 };
