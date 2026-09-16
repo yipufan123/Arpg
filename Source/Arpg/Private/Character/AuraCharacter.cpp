@@ -175,6 +175,7 @@ void AAuraCharacter::InitAbilityActorInfo()
 	AttributeSet = AuraPlayerState->GetAttributeSet();
 	UE_LOG(LogTemp, Warning, TEXT("InitAbilityActorInfo"));
 
+	OnAscRegistered.Broadcast(AbilitySystemComponent);
 	//add hud
 	if (AAuraPlayerController* PlayerController = Cast<AAuraPlayerController>(GetController())) {
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController is not null"));
