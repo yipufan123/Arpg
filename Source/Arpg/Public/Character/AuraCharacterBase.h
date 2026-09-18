@@ -31,7 +31,7 @@ public:
 	UAttributeSet* GetAttributeSet() { return AttributeSet; };
 
 	/** Combat InterFace  */
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override; 
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
@@ -50,7 +50,7 @@ public:
 	FOnDeath OnDeath;
 
 	UFUNCTION(NetMulticast, reliable)
-	virtual void MulticastHandleDeath();
+	virtual void MulticastHandleDeath(const FVector& DeathImpulse);
 
 	UPROPERTY(EditAnywhere,Category="Combat")
 	TArray<FTaggedMontage> AttackMontage;

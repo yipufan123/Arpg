@@ -141,10 +141,13 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 
 		if (bFatal)
 		{
+			//TODO:Use Death Impuse!
+			
 			ICombatInterface* CombatInterface = Cast<ICombatInterface>(Props.TargetActor);
 			if (CombatInterface)
 			{
-				CombatInterface->Die();
+				FVector Impulse = UAuraAbilitySystemLibrary::GetDeathImpulse(Props.EffectContextHandle);
+				CombatInterface->Die(Impulse);
 			}
 			SendXPEvent(Props);
 		}else
@@ -152,6 +155,12 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			FGameplayTagContainer TagContainer;
 			TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReactTag);
 			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+
+			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetknockbackForce(Props.EffectContextHandle);
+			if (!KnockbackForce.IsNearlyZero(1.f))
+			{
+				Props.TargetCharacter->LaunchCharacter(KnockbackForce,true,true);
+			}
 		}
 
 		//显示伤害数字

@@ -72,5 +72,6 @@ void UAuraProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 	
 	Projectile->DamageEffectParams = MakeDamageEffectParamsFromClassDefault();
 	
+	
 	Projectile->FinishSpawning(SpawnTransform);
 }

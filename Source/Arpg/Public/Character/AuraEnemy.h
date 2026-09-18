@@ -31,7 +31,7 @@ public:
 
 	//combat interface
 	virtual int32 GetPlayerLevel_Implementation() override;
-	virtual void Die() override;
+	virtual void Die(const FVector& DeathImpulse) override;
 	//combat interface end
 	UPROPERTY(BlueprintReadOnly)
 	bool bHighlighted = false;

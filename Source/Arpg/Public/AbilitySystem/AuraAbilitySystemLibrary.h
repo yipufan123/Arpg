@@ -70,6 +70,12 @@ public:
 	static FGameplayTag GetDamageType(const FGameplayEffectContextHandle& ContextHandle);
 
 	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static FVector GetDeathImpulse(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static FVector GetknockbackForce(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
 	static bool IsCriticalHit(const FGameplayEffectContextHandle& ContextHandle);
 
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
@@ -92,14 +98,20 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
 	static void SetDamageType(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,const FGameplayTag& InDamageType);
-	
+
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetDeathImpulse(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,const FVector& InDamageType);
+
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetKnockbackForce(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,const FVector& InForce);
+		
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetLivePlayersWithRadius(const UObject* WorldContextObject,TArray<AActor*>& OutOverlappingActors,const TArray<AActor*>& ActorsToIgore,float Radius,const FVector& SphereOrigin);
 
 	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsNotFriend(AActor* FirstActor,AActor* SecondActor);
 
-	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|DamageEffect")
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|DamageEffect")
 	static FGameplayEffectContextHandle ApplyDamageEffect(const FDamageEffectParams DamageEffectParams);
 	
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject,ECharacterClass CharacterClass,int32 CharacterLevel);
