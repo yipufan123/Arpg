@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿ // Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AbilitySystem/AuraAbilitySystemLibrary.h"
@@ -381,3 +381,47 @@ FGameplayEffectContextHandle UAuraAbilitySystemLibrary::ApplyDamageEffect(const 
 	DamageEffectParams.TargetASC->ApplyGameplayEffectSpecToSelf(*SpecHandle.Data);
 	return EffectContextHandle;
 }
+
+ TArray<FRotator> UAuraAbilitySystemLibrary::EventlySpacedRotators(const FVector& Forward, const FVector& Axis,float Spread,int32 NumRotators)
+ {
+	TArray<FRotator> Rotators;
+	const FVector LeftOfSpreed = Forward.RotateAngleAxis(-Spread / 2.f,Axis);
+	if (NumRotators > 1)
+	{
+		const float DeltaSpread = Spread / (NumRotators-1);
+		for (int32 i=0;i<NumRotators;i++)
+		{
+			const FVector Direction = LeftOfSpreed.RotateAngleAxis(DeltaSpread * i, FVector::UpVector);
+			const FVector Start = Forward + FVector(0,0,5.f);
+			Rotators.Add(Direction.Rotation());
+			
+		}
+	}else
+	{
+		Rotators.Add(Forward.Rotation());
+	}
+
+	return Rotators;
+ }
+
+ TArray<FVector> UAuraAbilitySystemLibrary::EventlyRotatedVectors(const FVector& Forward, const FVector& Axis,float Spread,int32 NumRotators)
+ {
+	TArray<FVector> Vectors;
+	const FVector LeftOfSpreed = Forward.RotateAngleAxis(-Spread / 2.f,Axis);
+	if (NumRotators > 1)
+	{
+		const float DeltaSpread = Spread / (NumRotators-1);
+		for (int32 i=0;i<NumRotators;i++)
+		{
+			const FVector Direction = LeftOfSpreed.RotateAngleAxis(DeltaSpread * i, FVector::UpVector);
+			const FVector Start = Forward + FVector(0,0,5.f);
+			Vectors.Add(Direction);
+			
+		}
+	}else
+	{
+		Vectors.Add(Forward);
+	}
+
+	return Vectors;
+ }

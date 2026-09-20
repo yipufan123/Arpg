@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "AuraPlayerController.generated.h"
 
+class UNiagaraSystem;
+class UNiagaraComponent;
 class UDamageTextComponent;
 struct FGameplayTag;
 class UAuraInputConfig;
@@ -76,6 +78,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<USplineComponent> Spline;
 
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UNiagaraSystem> ClickNiagaraComponent;
+	
 	void AutoRun();
 
 	UPROPERTY(EditDefaultsOnly)
