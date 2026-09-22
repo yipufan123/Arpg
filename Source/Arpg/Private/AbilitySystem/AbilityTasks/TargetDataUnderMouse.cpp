@@ -2,6 +2,7 @@
 #include "AbilitySystem/AbilityTasks/TargetDataUnderMouse.h"
 
 #include "AbilitySystemComponent.h"
+#include "Arpg/Arpg.h"
 
 UTargetDataUnderMouse* UTargetDataUnderMouse::CreateTargetDataUnderMouse(UGameplayAbility* OwingAbility)
 {
@@ -38,7 +39,7 @@ void UTargetDataUnderMouse::SendMouseCursorData()
 	
 	APlayerController* PC =Ability->GetCurrentActorInfo()->PlayerController.Get();
 	FHitResult CursorHit;
-	PC->GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	PC->GetHitResultUnderCursor(ECC_Target, false, CursorHit);
 
 	//封装数据并发送给服务端
 	FGameplayAbilityTargetDataHandle DataHandle;

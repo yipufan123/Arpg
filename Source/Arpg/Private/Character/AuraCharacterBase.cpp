@@ -70,7 +70,7 @@ void AAuraCharacterBase::IncrementMinionCount_Implementation(int32 Increment)
 
 ECharacterClass AAuraCharacterBase::GetCharacterClass_Implementation()
 {
-	return CharacterClass;
+	return CharacterClass; 
 }
 
 FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
@@ -81,6 +81,11 @@ FOnASCRegistered& AAuraCharacterBase::GetOnASCRegisteredDelegate()
 FOnDeath& AAuraCharacterBase::GetOnDeathDelegate()
 {
 	return OnDeath;
+}
+
+USkeletalMeshComponent* AAuraCharacterBase::GetWeapon_Implementation()
+{
+	return Weapon;
 }
 
 void AAuraCharacterBase::Die(const FVector& DeathImpulse)
