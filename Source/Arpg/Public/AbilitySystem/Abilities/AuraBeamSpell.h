@@ -20,7 +20,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StoreOwnerVariables();
-	
+
+	UFUNCTION(BlueprintCallable)
+	void TraceFirstTarget(const FVector& BeamTargetLocation);
+
+	UFUNCTION(BlueprintCallable)
+	void StoreAdditionalTargets(TArray<AActor*>& OutAdditionalTargets);
 private:
 protected:
 
@@ -35,4 +40,7 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite,Category="Beam")
 	TObjectPtr<ACharacter> OwnerCharacter;
+	
+	UPROPERTY(EditDefaultsOnly,BlueprintReadWrite,Category="Beam")
+	int32 MaxNumShockTargets = 5;
 };
