@@ -10,9 +10,11 @@
 #include "AbilitySystem/Data/LevelUpInfo.h"
 #include "UI/HUD/AuraHUD.h"
 #include "NiagaraComponent.h"
+#include "AbilitySystem/Debuff/DebuffNiagaraComponent.h"
 #include "Camera/CameraComponent.h"
 #include"GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Tags/AuraGameplayTags.h"
 
 AAuraCharacter::AAuraCharacter()
 {
@@ -162,6 +164,41 @@ int32 AAuraCharacter::GetPlayerLevel_Implementation()
 	return AuraPlayerState->GetPlayerLevel();
 }
 
+void AAuraCharacter::OnRep_Stunned()
+{
+
+	const FAuraGameplayTags AuraGameplayTags = FAuraGameplayTags::Get();
+	if (UAuraAbilitySystemComponent* AuraASC = Cast<UAuraAbilitySystemComponent>(AbilitySystemComponent))
+	{
+		FGameplayTagContainer BlockedTags;
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_CursorTrace);
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_InputHeld);
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_InputPressed);
+		BlockedTags.AddTag(AuraGameplayTags.Player_Block_InputReleased);
+		if (bIsStunned)
+		{
+			AuraASC->AddLooseGameplayTags(BlockedTags);
+			StunDebuffComponent->Activate();
+		}else
+		{
+			AuraASC->RemoveLooseGameplayTags(BlockedTags);
+			StunDebuffComponent->Deactivate();
+		}
+
+	}
+}
+
+void AAuraCharacter::OnRep_Burned()
+{
+	if (bIsBurned)
+	{
+		BurnDebuffComponent->Activate();
+	}else
+	{
+		BurnDebuffComponent->Deactivate();
+	}
+}
+
 void AAuraCharacter::InitAbilityActorInfo()
 {
 	AAuraPlayerState* AuraPlayerState = GetPlayerState<AAuraPlayerState>();
@@ -176,6 +213,9 @@ void AAuraCharacter::InitAbilityActorInfo()
 	UE_LOG(LogTemp, Warning, TEXT("InitAbilityActorInfo"));
 
 	OnAscRegistered.Broadcast(AbilitySystemComponent);
+
+	AbilitySystemComponent->RegisterGameplayTagEvent(FAuraGameplayTags::Get().Debuff_Stun,EGameplayTagEventType::NewOrRemoved).AddUObject(this,&AAuraCharacter::StunTagChanged);
+	
 	//add hud
 	if (AAuraPlayerController* PlayerController = Cast<AAuraPlayerController>(GetController())) {
 		UE_LOG(LogTemp, Warning, TEXT("PlayerController is not null"));

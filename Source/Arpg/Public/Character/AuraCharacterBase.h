@@ -27,11 +27,13 @@ class ARPG_API AAuraCharacterBase : public ACharacter,public IAbilitySystemInter
 
 public:
 	AAuraCharacterBase();
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() { return AttributeSet; };
 
 	/** Combat InterFace  */
 	virtual void Die(const FVector& DeathImpulse) override;
+	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual FVector GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag) override; 
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
@@ -43,7 +45,6 @@ public:
 	virtual void IncrementMinionCount_Implementation(int32 Increment);
 	virtual ECharacterClass GetCharacterClass_Implementation() override;
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() override;
-	virtual FOnDeath& GetOnDeathDelegate() override;
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	/** end Combat InterFace  */
 	
@@ -56,6 +57,20 @@ public:
 	UPROPERTY(EditAnywhere,Category="Combat")
 	TArray<FTaggedMontage> AttackMontage;
 
+	UPROPERTY(ReplicatedUsing=OnRep_Stunned,BlueprintReadOnly)
+	bool bIsStunned = false;
+	
+	UPROPERTY(ReplicatedUsing=OnRep_Burned,BlueprintReadOnly)
+	bool bIsBurned = false;
+
+	UPROPERTY(Replicated,BlueprintReadOnly)
+	bool bInShockLoop = false;
+
+	UFUNCTION()
+	virtual void OnRep_Stunned();
+
+	UFUNCTION()
+	virtual void OnRep_Burned();
 protected:
 	bool bDead = false;
 	
@@ -93,6 +108,12 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Attributes")
 	TSubclassOf<UGameplayEffect> DefaultVitalAttributes;
+
+	
+	virtual void StunTagChanged(const FGameplayTag CallbackTag,int32 NewCount);
+	
+	UPROPERTY(EditAnywhere,BlueprintReadOnly,Category = "Combat")
+	float BaseWalkSpeed = 600;
 	
 	void ApplyEffectToSelf(TSubclassOf<UGameplayEffect> GameplayEffectClass,float Level) const;
 	virtual void InitializeDefaultAttributes() const;
@@ -127,6 +148,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UDebuffNiagaraComponent> BurnDebuffComponent;
+
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UDebuffNiagaraComponent> StunDebuffComponent;
 private:
 	UPROPERTY(EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
@@ -137,3 +161,4 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	TObjectPtr<UAnimMontage> HitReactMontage;
 };
+
