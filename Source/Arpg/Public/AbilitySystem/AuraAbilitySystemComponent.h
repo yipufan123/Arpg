@@ -13,6 +13,7 @@ DECLARE_MULTICAST_DELEGATE(FAbilitiesGiven);
 DECLARE_DELEGATE_OneParam(FForEachAbility,const FGameplayAbilitySpec&);
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FAbilityStatusChanged,const FGameplayTag& /*AbilityTag*/,const FGameplayTag&,int32 /*AbilityLevel*/);
 DECLARE_MULTICAST_DELEGATE_FourParams(FAbilityEquipped,const FGameplayTag& /*AbilityTag*/,const FGameplayTag& /*StatusTag*/,const FGameplayTag& /*Slot Tag*/,const FGameplayTag& /*PrevSlot*/);
+DECLARE_MULTICAST_DELEGATE_OneParam(FDeactivatePassiveAbility,const FGameplayTag& );
 
 /**
  * 
@@ -28,6 +29,8 @@ public:
 	FAbilitiesGiven AbilitiesGivenDelegate;
 	FAbilityStatusChanged AbilityStatusChanged;
 	FAbilityEquipped AbilityEquippedDelegate;
+	FDeactivatePassiveAbility DeactivatePassiveAbility;
+	
 	bool bStartupAbilitiesGiven = false;
 	
 	void AddCharacterAbilities(const TArray<TSubclassOf<UGameplayAbility>>& StartAbilities);
@@ -61,6 +64,7 @@ public:
 	UFUNCTION(Server, Reliable)
 	void ServerSpendSpellPoint(const FGameplayTag& AbilityTag);
 
+	UFUNCTION(Client, Reliable)
 	void ClientEquipAbility(const FGameplayTag& AbilityTag,const FGameplayTag& Status,const FGameplayTag& Slot,const FGameplayTag& PreviousSlot);
 
 	//根据gameplayTag获取ability的描述信息

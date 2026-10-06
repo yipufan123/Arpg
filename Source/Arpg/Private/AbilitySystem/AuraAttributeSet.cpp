@@ -152,10 +152,13 @@ void UAuraAttributeSet::HandleIncomingDamage(const FEffectProperties& Props)
 			SendXPEvent(Props);
 		}else
 		{
-			FGameplayTagContainer TagContainer;
-			TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReactTag);
-			Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
-
+			if (Props.TargetCharacter ->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsBeingShocked(Props.TargetCharacter))
+			{
+				FGameplayTagContainer TagContainer;
+				TagContainer.AddTag(FAuraGameplayTags::Get().Effects_HitReactTag);
+				Props.TargetASC->TryActivateAbilitiesByTag(TagContainer);
+			}
+			
 			const FVector& KnockbackForce = UAuraAbilitySystemLibrary::GetknockbackForce(Props.EffectContextHandle);
 			if (!KnockbackForce.IsNearlyZero(1.f))
 			{
@@ -257,11 +260,18 @@ void UAuraAttributeSet::HandleIncomingXP(const FEffectProperties& Props)
 		const int32 NumLevelUps = NewLevel - CurrentLevel;
 		if (NumLevelUps>0)
 		{
-			//人物升级
-			int32 AttributePointsReward = IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter,CurrentLevel);
-			int32 SpellPointsReward = IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter,CurrentLevel);
-				
 			IPlayerInterface::Execute_AddToPlayerLevel(Props.SourceCharacter,NumLevelUps);
+			
+			//人物升级
+			int32 AttributePointsReward = 0;
+			int32 SpellPointsReward = 0;
+
+			for (int32 i = 0;i<NumLevelUps;i++)
+			{
+				SpellPointsReward += IPlayerInterface::Execute_GetSpellPointsReward(Props.SourceCharacter,CurrentLevel+i);
+				AttributePointsReward += IPlayerInterface::Execute_GetAttributePointsReward(Props.SourceCharacter,CurrentLevel+i);
+			}
+			
 			IPlayerInterface::Execute_AddToAttributePoints(Props.SourceCharacter,AttributePointsReward);
 			IPlayerInterface::Execute_AddToSpellPoints(Props.SourceCharacter,SpellPointsReward);
 
