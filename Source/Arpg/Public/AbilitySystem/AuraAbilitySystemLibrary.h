@@ -27,6 +27,7 @@ class ARPG_API UAuraAbilitySystemLibrary : public UBlueprintFunctionLibrary
 	GENERATED_BODY()
 public:
 
+	//begin Widget Controller 
 	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|WidgetController",meta = (DefaultToSelf = "WorldContextObject"))
 	static bool MakeWidgetControllerParam(const UObject* WorldContextObject,FWidgetControllerParams& OutWCParams,AAuraHUD*& OutAuraHUD);
 	
@@ -38,7 +39,10 @@ public:
 
 	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|WidgetController",meta = (DefaultToSelf = "WorldContextObject"))
 	static USpellMenuWidgetController* GetSpellMenuWidgetController(const UObject* WorldContextObject);
+	//end Widget Controller
 
+	
+	//begin ability system startup
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static void InitializeDefaultAttributes(const UObject* WorldContextObject,ECharacterClass CharacterClass,float Level,UAbilitySystemComponent* ASC);
 
@@ -50,7 +54,10 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|CharacterClassDefaults")
 	static UAbilityInfo* GetAbilityInfoClass(const UObject* WorldContextObject);
+	//end ability system startup
 
+	
+	//begin effect context getter
 	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
 	static bool IsBlockedHit(const FGameplayEffectContextHandle& ContextHandle);
 
@@ -77,7 +84,22 @@ public:
 
 	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
 	static bool IsCriticalHit(const FGameplayEffectContextHandle& ContextHandle);
+	
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static bool IsRadialDamage(const FGameplayEffectContextHandle& ContextHandle);
 
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static float GetRadialDamageInnerRadius(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static float GetRadialDamageOuterRadius(const FGameplayEffectContextHandle& ContextHandle);
+
+	UFUNCTION(BlueprintPure,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static FVector GetRadialDamageOrigin(const FGameplayEffectContextHandle& ContextHandle);
+	//end effect context getter
+
+
+	//begin effect context setter
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
 	static void SetIsBlockedHit(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,bool bInIsBlocked);
 
@@ -104,7 +126,22 @@ public:
 
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
 	static void SetKnockbackForce(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,const FVector& InForce);
-		
+
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetIsRadialDamage(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,bool bInIsRadialDamage);
+
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetRadialDamageInnerRadius(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,float InRadialDamageInnerRadius);
+
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetRadialDamageOuterRadius(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,float InRadialDamageOuterRadius);
+
+	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayEffect")
+	static void SetRadialDamageOrigin(UPARAM(ref) FGameplayEffectContextHandle& ContextHandle,const FVector& InRadialDamageOrigin);
+	//end effect context setter
+
+
+	//begin gameplay mechanics
 	UFUNCTION(BlueprintCallable,Category="AuraAbilitySystemLibrary|GameplayMechanics")
 	static void GetLivePlayersWithRadius(const UObject* WorldContextObject,TArray<AActor*>& OutOverlappingActors,const TArray<AActor*>& ActorsToIgore,float Radius,const FVector& SphereOrigin);
 
@@ -124,4 +161,5 @@ public:
 	static TArray<FVector> EventlyRotatedVectors(const FVector& Forward,const FVector& Axis,float Spread,int32 NumRotators);
 	
 	static int32 GetXPRewardForClassAndLevel(const UObject* WorldContextObject,ECharacterClass CharacterClass,int32 CharacterLevel);
+	//end gameplay mechanics
 };

@@ -9,6 +9,7 @@
 #include "AuraCharacterBase.generated.h"
 
 
+
 class UPassiveNiagaraComponent;
 class UDebuffNiagaraComponent;
 class UNiagaraSystem;
@@ -20,6 +21,7 @@ class UGameplayEffect;
 class UAnimMontage;
 class UMaterialInstance;
 
+
 //character base
 UCLASS(Abstract)
 class ARPG_API AAuraCharacterBase : public ACharacter,public IAbilitySystemInterface,public ICombatInterface
@@ -30,7 +32,9 @@ public:
 	AAuraCharacterBase();
 	
 	virtual void Tick(float DeltaTime) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, class AController* EventInstigator, AActor* DamageCauser) override;
+	
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 	UAttributeSet* GetAttributeSet() { return AttributeSet; };
 
@@ -51,10 +55,12 @@ public:
 	virtual USkeletalMeshComponent* GetWeapon_Implementation() override;
 	virtual void SetIsBeingShocked_Implementation(bool isBeingShocked) override;
 	virtual bool IsBeingShocked_Implementation() const override;
+	virtual FOnDamageSignature& GetOnDamageSignature() override;
 	/** end Combat InterFace  */
 	
 	FOnASCRegistered OnAscRegistered;
 	FOnDeath OnDeath;
+	FOnDamageSignature OnDamageDelegate;
 
 	UFUNCTION(NetMulticast, reliable)
 	virtual void MulticastHandleDeath(const FVector& DeathImpulse);

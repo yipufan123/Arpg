@@ -14,6 +14,7 @@ class UAnimMontage;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnASCRegistered,UAbilitySystemComponent*);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnDeath,AActor*,DeadActor);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDamageSignature,float /*DamageAmount*/)
 
 // This class does not need to be modified.
 UINTERFACE(MinimalAPI,BlueprintType)
@@ -78,6 +79,7 @@ public:
 	void SetInShockLoop(bool bInLoop);
 
 	virtual FOnASCRegistered& GetOnASCRegisteredDelegate() = 0;
+	virtual FOnDamageSignature& GetOnDamageSignature() = 0;
 
 	UFUNCTION(BlueprintNativeEvent,BlueprintCallable)
 	USkeletalMeshComponent* GetWeapon();

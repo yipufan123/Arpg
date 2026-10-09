@@ -8,6 +8,7 @@
 #include "AbilitySystem/AuraAttributeSet.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Interaction/CombatInterface.h"
+#include "Kismet/GameplayStatics.h"
 #include "Tags/AuraGameplayTags.h"
 
 struct AuraDamageStatics
@@ -74,7 +75,7 @@ void UExecCal_Damage::DetermineDeBuff(const FGameplayEffectCustomExecutionParame
 		const float TypeDamage = Spec.GetSetByCallerMagnitude(Pair.Key,false,-1.f);
 		if (TypeDamage>-1.f)
 		{
-			//Determin if there was successful debuff
+			//Determine if there was successful debuff
 			const float SourceDebuffChance = Spec.GetSetByCallerMagnitude(GameplayTags.Debuff_Chance,false,-1.f);
 
 			float TargetDebuffResistance = 0.f;
@@ -139,8 +140,10 @@ void UExecCal_Damage::Execute_Implementation(const FGameplayEffectCustomExecutio
 	{
 		TargetPlayerLevel = ICombatInterface::Execute_GetPlayerLevel(TargetAvatar);
 	}
+	
 
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
+	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
 	const FGameplayTagContainer* SourceTag = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTag = Spec.CapturedTargetTags.GetAggregatedTags();
 
@@ -168,7 +171,36 @@ void UExecCal_Damage::Execute_Implementation(const FGameplayEffectCustomExecutio
 		Resistance = FMath::Clamp(Resistance,0.f,100.f);
 
 		DamageTypeValue*=(100.f-Resistance)/100.f;
+		
+		if (UAuraAbilitySystemLibrary::IsRadialDamage(EffectContextHandle))
+		{
+			//1.override TakeDamage in AuraCharacterBase
+			//2.create delegate OnDamageDelegate,broadcast damage received in TakeDamage
+			//3.bind lambda to OnDamageDelegate on the Victim here
+			//4.call UGameplayStatics::ApplyRadialDamageWithFallOff to cause damage
+			//5.In Lambda set DamageTypeValue to the damage received from the broadcast
 
+			if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(TargetAvatar))
+			{
+				CombatInterface->GetOnDamageSignature().AddLambda([&](float DamageAmount)
+				{
+					DamageTypeValue = DamageAmount;
+				});
+			}
+
+			UGameplayStatics::ApplyRadialDamageWithFalloff(TargetAvatar,
+				DamageTypeValue,
+				0.f,
+				UAuraAbilitySystemLibrary::GetRadialDamageOrigin(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageInnerRadius(EffectContextHandle),
+				UAuraAbilitySystemLibrary::GetRadialDamageOuterRadius(EffectContextHandle),
+				1.f,
+				UDamageType::StaticClass(),
+				TArray<AActor*>(),
+				SourceAvatar,
+				nullptr);
+		}
+		
 		Damage+=DamageTypeValue;
 	}
 
@@ -187,7 +219,7 @@ void UExecCal_Damage::Execute_Implementation(const FGameplayEffectCustomExecutio
 		Damage *=0.5f;	
 	}
 	
-	FGameplayEffectContextHandle EffectContextHandle = Spec.GetContext();
+
 	UAuraAbilitySystemLibrary::SetIsBlockedHit(EffectContextHandle,bBlocked);
 	
 	/**
