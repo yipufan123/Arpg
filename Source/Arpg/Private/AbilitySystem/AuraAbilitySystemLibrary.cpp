@@ -5,8 +5,6 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AuraAbilityTypes.h"
-#include "AbilitySystem/AuraAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/AuraGameplayAbility.h"
 #include "Game/AuraGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/AuraPlayerState.h"
@@ -144,7 +142,48 @@ int32 UAuraAbilitySystemLibrary::GetXPRewardForClassAndLevel(const UObject* Worl
 	return static_cast<int32>(XPReward);
 }
 
-//获取敌人基础类信息
+ void UAuraAbilitySystemLibrary::SetIsRadialDamageEffectParam(FDamageEffectParams& DamageEffectParams, bool bIsRadial,
+	 float InnerRadius, float OuterRadius, FVector Origin)
+ {
+	DamageEffectParams.bIsRadialDamage = bIsRadial;
+	DamageEffectParams.RadialDamageInnerRadius = InnerRadius;
+	DamageEffectParams.RadialDamageOuterRadius = OuterRadius;
+	DamageEffectParams.RadialDamageOrigin = Origin;
+ }
+
+ void UAuraAbilitySystemLibrary::SetKnockbackDirection(FDamageEffectParams& DamageEffectParams,
+	 FVector KnockbackDirection,float Magnitude)
+ {
+	KnockbackDirection.Normalize();
+	if (Magnitude == 0.0f)
+	{
+		DamageEffectParams.KnockbackForce = KnockbackDirection * DamageEffectParams.KnockbackForceMagnitude;
+	}else
+	{
+		DamageEffectParams.KnockbackForce = KnockbackDirection * Magnitude;
+	}
+ }
+
+ void UAuraAbilitySystemLibrary::SetDeathImpulseDirection(FDamageEffectParams& DamageEffectParams,
+	 FVector DeathImpulseDirection,float Magnitude)
+ {
+	DeathImpulseDirection.Normalize();
+	if (Magnitude == 0.0f)
+	{
+		DamageEffectParams.DeathImpulse = DeathImpulseDirection * DamageEffectParams.DeathImpulseMagnitude;
+	}else
+	{
+		DamageEffectParams.DeathImpulse = DeathImpulseDirection * Magnitude;
+	}
+ }
+
+ void UAuraAbilitySystemLibrary::SetTargetEffectParamASC(FDamageEffectParams& DamageEffectParams,
+	 UAbilitySystemComponent* InASC)
+ {
+	DamageEffectParams.TargetASC = InASC;
+ }
+
+ //获取敌人基础类信息
 UCharacterClassInfo* UAuraAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
 {
 	const AAuraGameModeBase* AuraGameMode	= Cast<AAuraGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));

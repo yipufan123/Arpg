@@ -24,6 +24,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly,Category="FireBlast")
 	int32 NumFireBalls = 12;
+	
 private:
 	
 	UPROPERTY(EditDefaultsOnly,Category="FireBlast")

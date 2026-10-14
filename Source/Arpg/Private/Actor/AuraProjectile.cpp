@@ -43,17 +43,17 @@ void AAuraProjectile::BeginPlay()
 	SetReplicateMovement(true);
 	Sphere->OnComponentBeginOverlap.AddDynamic(this,&AAuraProjectile::OnSphereOverlap);
 
-	LoopingSoundCompont = UGameplayStatics::SpawnSoundAttached(LoopSound,GetRootComponent());
+	LoopingSoundComponent = UGameplayStatics::SpawnSoundAttached(LoopSound,GetRootComponent());
 }
 
 void AAuraProjectile::OnHit()
 {
 	UGameplayStatics::PlaySoundAtLocation(this,ImpactSound,GetActorLocation(),FRotator::ZeroRotator);
 	UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,ImpactEffect,GetActorLocation(),FRotator::ZeroRotator);
-	if (LoopingSoundCompont)
+	if (LoopingSoundComponent)
 	{
-		LoopingSoundCompont->Stop();
-		LoopingSoundCompont->DestroyComponent();
+		LoopingSoundComponent->Stop();
+		LoopingSoundComponent->DestroyComponent();
 	}
 	bHit = true;
 }
@@ -70,14 +70,9 @@ void AAuraProjectile::Destroyed()
 void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                       UPrimitiveComponent* OtherCom, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (DamageEffectParams.SourceASC == nullptr) return;
-	AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
-	
-	if (SourceAvatarActor == OtherActor) return;
-	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor,OtherActor)) return;
-	if (!bHit) OnHit();
 
-	
+	if (!IsValidOverlap(OtherActor)) return;
+	if (!bHit) OnHit();
 	if (HasAuthority())
 	{
 		if (UAbilitySystemComponent* TargetASC = UAbilitySystemBlueprintLibrary::GetAbilitySystemComponent(OtherActor))
@@ -105,5 +100,15 @@ void AAuraProjectile::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
 	{
 		bHit = true;
 	}
+}
+
+bool AAuraProjectile::IsValidOverlap(AActor* OtherActor)
+{
+	if (DamageEffectParams.SourceASC == nullptr) return false;
+	AActor* SourceAvatarActor = DamageEffectParams.SourceASC->GetAvatarActor();
+	
+	if (SourceAvatarActor == OtherActor) return false;
+	if (!UAuraAbilitySystemLibrary::IsNotFriend(SourceAvatarActor,OtherActor)) return false;
+	return true;
 }
 
