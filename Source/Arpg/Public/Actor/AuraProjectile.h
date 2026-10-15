@@ -45,7 +45,6 @@ protected:
 	bool bHit = false;
 
 	bool IsValidOverlap(AActor* OtherActor);
-
 	
 	UPROPERTY()
 	TObjectPtr<UAudioComponent> LoopingSoundComponent;
