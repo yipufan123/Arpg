@@ -8,7 +8,7 @@ public class Arpg : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" ,"EnhancedInput", "GameplayAbilities"});
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" ,"EnhancedInput", "GameplayAbilities","ModelViewViewModel"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {"GameplayTags","GameplayTasks","NavigationSystem","Niagara","AIModule"});
 

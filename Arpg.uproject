@@ -12,7 +12,8 @@
 				"Engine",
 				"GameplayAbilities",
 				"UMG",
-				"CoreUObject"
+				"CoreUObject",
+				"ModelViewViewModel"
 			]
 		}
 	],
@@ -45,6 +46,10 @@
 				"Mac",
 				"Linux"
 			]
+		},
+		{
+			"Name": "ModelViewViewModel",
+			"Enabled": true
 		}
 	]
 }
