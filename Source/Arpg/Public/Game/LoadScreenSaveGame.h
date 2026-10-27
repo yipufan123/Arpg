@@ -22,7 +22,6 @@ class ARPG_API ULoadScreenSaveGame : public USaveGame
 {
 	GENERATED_BODY()
 public:
-
 	UPROPERTY()
 	FString SlotName = FString("");
 
@@ -35,6 +34,9 @@ public:
 	UPROPERTY()
 	FString MapName = FString("Default Map Name");
 
+	UPROPERTY()
+	FName PlayerStartTag;
+	
 	UPROPERTY()
 	TEnumAsByte<ESaveSlotStatus> SaveSlotStatus = ESaveSlotStatus::Vacant;
 };

@@ -30,3 +30,8 @@ void UMVVM_LoadSlot::SetMapName(FString InMapName)
 {
 	UE_MVVM_SET_PROPERTY_VALUE(MapName,InMapName);
 }
+
+void UMVVM_LoadSlot::SetPlayerStartTag(FName InPlayerStartTag)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(PlayerStartTag,InPlayerStartTag);
+}
