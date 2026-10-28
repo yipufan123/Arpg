@@ -18,7 +18,6 @@ class ARPG_API UMVVM_LoadSlot : public UMVVMViewModelBase
 {
 	GENERATED_BODY()
 public:
-	
 	UPROPERTY(BlueprintAssignable)
 	FSetWidgetSwitcherIndex SetWidgetSwitcherIndex;
 
@@ -27,13 +26,13 @@ public:
 	
 	void InitializeSlot();
 
-
 	// Begin Setter
 	void SetLoadSlotName(FString InLoadSlotName);
 	void SetPlayerName(FString InPlayerName);
 	void SetSlotIndex(int32 InSlotIndex);
 	void SetMapName(FString InMapName);
 	void SetPlayerStartTag(FName InPlayerStartTag);
+	void SetPlayerLevel(int32 InPlayerLevel);
 	// End Setter
 
 	// Begin Getter
@@ -42,6 +41,7 @@ public:
 	int32 GetSlotIndex() const{return SlotIndex;}
 	FString GetMapName() const{return MapName;}
 	FName GetPlayerStartTag() const {return PlayerStartTag;};
+	int32 GetPlayerLevel() const{return PlayerLevel;}
 	// End Getter
 	
 	UPROPERTY()
@@ -61,6 +61,9 @@ private:
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess=true))
 	FString MapName;
+	
+	UPROPERTY(EditAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess=true))
+	int32 PlayerLevel;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite,FieldNotify,Setter,Getter,meta=(AllowPrivateAccess=true))
 	FName PlayerStartTag;

@@ -35,3 +35,8 @@ void UMVVM_LoadSlot::SetPlayerStartTag(FName InPlayerStartTag)
 {
 	UE_MVVM_SET_PROPERTY_VALUE(PlayerStartTag,InPlayerStartTag);
 }
+
+void UMVVM_LoadSlot::SetPlayerLevel(int32 InPlayerLevel)
+{
+	UE_MVVM_SET_PROPERTY_VALUE(PlayerLevel,InPlayerLevel);
+}
